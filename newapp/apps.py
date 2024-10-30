@@ -4,11 +4,9 @@ import numpy as np
 
 app = Flask(__name__)
 
-# Load your pre-trained model
 with open('random_forest_model.pkl', 'rb') as file:
     model = pickle.load(file)
 
-# Mapping function using your GPA-based rules
 def map_grade_class(prediction):
     if prediction >= 3.5:
         return 'A'
@@ -28,7 +26,6 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Collect and convert form inputs to appropriate types
         features = [
             int(request.form['Age']),
             int(request.form['Gender']),
@@ -47,16 +44,12 @@ def predict():
     except ValueError:
         return render_template('index.html', prediction_text="Please enter valid values for all fields.")
 
-    # Convert features into numpy array for the model
     features_array = np.array([features])
 
-    # Make a numeric prediction using the model
     numeric_prediction = model.predict(features_array)[0]
 
-    # Map numeric prediction to a letter grade based on GPA classification rules
     grade_prediction = map_grade_class(numeric_prediction)
 
-    # Render the result on the webpage
     return render_template('index.html', prediction_text=f'Predicted Grade: {grade_prediction}')
 
 if __name__ == '__main__':
